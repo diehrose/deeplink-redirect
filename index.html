@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>啟動 55688 App</title>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent);
+    }
+
+    function isIOS() {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    function tryLaunchApp() {
+      const page = getQueryParam("page") || "home";
+      const androidScheme = `my55688://${page}`;
+      const iosUniversalLink = `https://launch.55688.com/${page}`;
+      const androidFallback = `https://play.google.com/store/apps/details?id=55688.com&referrer=page%3D${encodeURIComponent(page)}`;
+      const iosFallback = `https://apps.apple.com/app/id123456789`; // 替換為正確的 App Store 連結
+
+      const now = Date.now();
+
+      if (isAndroid()) {
+        window.location = androidScheme;
+        setTimeout(() => {
+          if (Date.now() - now < 1600) {
+            window.location = androidFallback;
+          }
+        }, 1000);
+      } else if (isIOS()) {
+        window.location = iosUniversalLink;
+        setTimeout(() => {
+          if (Date.now() - now < 1600) {
+            localStorage.setItem("pendingPage", page);
+            window.location = iosFallback;
+          }
+        }, 1000);
+      } else {
+        alert("請用手機開啟此頁面");
+      }
+    }
+
+    window.onload = tryLaunchApp;
+  </script>
+</head>
+<body>
+  <p>正在為您啟動 55688 App...</p>
+</body>
+</html>
