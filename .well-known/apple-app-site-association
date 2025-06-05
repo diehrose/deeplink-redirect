@@ -1,1 +1,28 @@
-
+{
+    "applinks": {
+        "details": [
+            {
+                "appID": "69944PD99V.tw.com.taiwantaxi.CallStation.dev",
+                "paths": [
+                    "/",
+                    "*"
+                ]
+            },
+            {
+                "appID": "9H8545NT8F.tw.com.taiwantaxi.CallStation.dev",
+                "paths": [
+                    "/",
+                    "*"
+                ]
+            },
+            {
+                "appID": "9H8545NT8F.tw.com.taiwantaxi.CallStation",
+                "paths": [
+                    "/",
+                    "*"
+                ]
+            }
+        ]
+    },
+    "appclips": { }
+}
