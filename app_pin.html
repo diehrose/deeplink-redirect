@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>啟動 55688 App</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      text-align: center;
+      padding: 24px;
+    }
+
+    #message {
+      font-size: 2.5rem;
+      margin-bottom: 24px;
+      color: #333;
+    }
+
+    #launch-button {
+      padding: 20px 40px;
+      font-size: 2.25rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #007aff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #launch-button:hover {
+      background-color: #005fca;
+    }
+  </style>
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent);
+    }
+
+    function isIOS() {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+
+    function isAndroidChrome() {
+      const ua = navigator.userAgent.toLowerCase();
+      return ua.includes("android") &&
+             ua.includes("chrome") &&
+             !ua.includes("edg") &&
+             !ua.includes("opr") &&
+             !ua.includes("gsa") &&
+             !ua.includes("line") &&
+             !ua.includes("fbav") &&
+             !ua.includes("wv");
+    }
+
+    function isFacebookApp() {
+      return /FBAN|FBAV/.test(navigator.userAgent);
+    }
+
+    function tryLaunchApp(isFromClick) {
+      const page = getQueryParam("page") || "home";
+      const androidScheme = `my55688`;
+      const androidPackage = `com.testinginstallreferrer.deeplink.test`;
+      const androidFallback = `https://play.google.com/store/apps/details?id=${androidPackage}&referrer=utm_content%3D${encodeURIComponent(page)}`;
+      const androidIntentUrl = 'intent://' + page + '#Intent;scheme=' + androidScheme + ';package=' + androidPackage + ';S.browser_fallback_url=' + androidFallback + ';end';
+
+      if (isAndroid()) {
+        window.location.href = androidIntentUrl;
+      } else {
+        updateMessage("請用手機開啟此頁面");
+      }
+    }
+
+    function updateMessage(text) {
+      document.getElementById("message").innerText = text;
+    }
+
+    window.onload = function () {
+      const launchButton = document.getElementById("launch-button");
+      if (isAndroid()) {
+        if (isFacebookApp()) {
+          // launchButton.style.display = "none";
+          // updateMessage("請點擊右上角，使用外部瀏覽器開啟");
+          // // 進入 FB 瀏覽器時直接覆蓋畫面
+          // const page = getQueryParam("page") || "home";
+          // const redirectUrl = `https://appdeeplink.z13.web.core.windows.net/appintent_dev.html?page=${encodeURIComponent(page)}`;
+          //       // 顯示提示 UI
+          // document.body.innerHTML = `
+          //   <div style="padding: 2em; text-align: center;">
+          //     <p>請使用外部瀏覽器開啟本頁以獲得完整體驗</p>
+          //     <a href="${redirectUrl}" 
+          //        style="display:inline-block; padding:10px 20px; background:#007bff; color:#fff; border-radius:5px; text-decoration:none;">
+          //        開啟外部瀏覽器
+          //     </a>
+          //   </div>
+          // `;
+          const redirectUrl = `https://appdeeplink.z13.web.core.windows.net/app_pin.html?page=${encodeURIComponent(page)}`;
+          const page = getQueryParam("page") || "home";
+          const intentUrl = `intent://${redirectUrl}#Intent;scheme=https;package=com.android.chrome;end;`;
+          window.location.href = intentUrl;
+
+        } else {
+          launchButton.style.display = "inline-block";
+          updateMessage("請點擊下方按鈕以啟動 App");
+        }
+      } else {
+        launchButton.style.display = "none";
+        updateMessage("請用手機開啟此頁面");
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
+    <p id="message">載入中...</p>
+    <button id="launch-button" onclick="tryLaunchApp()">啟動 App</button>
+  </div>
+</body>
+</html>
