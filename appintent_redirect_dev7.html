@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>啟動 App 中…</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      padding-top: 60px;
+      background: #f2f2f2;
+    }
+
+    h1 {
+      font-size: 2.5rem; /* 調整主標題大小 */
+      color: #333;
+    }
+
+    #message {
+      font-size: 2.2rem; /* 調整訊息文字大小 */
+      color: #666;
+    }
+  </style>
+
+  <script>
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent);
+    }
+    function isFacebookApp() {
+      return /FBAN|FBAV/.test(navigator.userAgent);
+    }
+    function updateMessage(text) {
+      document.getElementById("message").innerText = text;
+    }
+    function getAllParams() {
+      return new URLSearchParams(window.location.search);
+    }
+    function getQueryParam(param) {
+      const urlParams = getAllParams();
+      return urlParams.get(param);
+    }
+    
+
+    function redirectToIntent() {
+      const urlParams = getAllParams();
+      const page = getQueryParam("page") || "empty";
+
+      // 加上 timestamp 避免 cache
+      urlParams.set("t", Date.now());
+
+      // 移除 page 避免重複
+      urlParams.delete("page");
+
+      // 把 queryString 組起來 (包含 utm / omniclid)
+      const queryString = urlParams.toString();
+
+      const scheme = "my55688";
+      const pkg = "dbx.taiwantaxi.dev";
+      const fallback = `https://play.google.com/store/apps/details?id=${pkg}&referrer=utm_content=${encodeURIComponent(page)}&utm_query=${encodeURIComponent(queryString)}`;
+      const intentUrl =
+        `intent://${page}?${queryString}#Intent;` +
+        `scheme=${scheme};package=${pkg};` +
+        `S.browser_fallback_url=${encodeURIComponent(fallback)};end`;
+
+      window.location.href = intentUrl;
+    }
+
+    window.onload = function () {
+      setTimeout(redirectToIntent, 100);
+      if (isAndroid()) {
+        if (isFacebookApp()) {
+          updateMessage("如果沒有自動開啟，請點擊右上角，使用外部瀏覽器開啟");
+        } else {
+          updateMessage("如果沒有自動開啟，請確認您已安裝 App");
+        }
+      } else {
+        updateMessage("請用手機開啟此頁面");
+      }
+    };
+  </script>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      padding-top: 60px;
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>正在開啟 55688 App…</h1>
+  <p id="message">載入中...</p>
+</body>
+</html>
